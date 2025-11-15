@@ -1,3 +1,15 @@
-body{
-    background-color: bisque;
+/* public/style.css */
+body {
+  font-family: sans-serif;
+  text-align: center;
+  background: #f0f8ff;
+}
+#pet img {
+  width: 200px;
+  transition: transform 0.2s;
+}
+button {
+  margin: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
 }
