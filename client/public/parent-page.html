@@ -17,14 +17,15 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; 
         }
         @media (max-width: 600px) {
-            header {
+            header, #controls, .grid h2 {
                 display: none;
             }
-        #localVideo { 
+            #localVideo { 
             /* transform: scaleX(-1);  */
             z-index: 999;
+            background-color: aqua;
         }
-        #remoteVideo { 
+            #remoteVideo { 
             /* ransform: scaleX(1); */
             inset: 0;
          }
