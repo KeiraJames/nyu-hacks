@@ -1,13 +1,15 @@
-whitelist = ['http://localhost:3000', 'http://example.com'];
+const ngrokOrigin = 'https://unpatterned-centennially-candida.ngrok-free.dev'; // added for testing
+const whitelist = [ngrokOrigin, 'http://localhost:3000', 'http://example.com'];
 
-corsOptions = {
-  origin: function (origin, callback) {
+const corsOptions = {
+   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
+  methods: ['GET', 'POST'] 
 };
 
-module.exports = corsOptions; 
+export default corsOptions; 

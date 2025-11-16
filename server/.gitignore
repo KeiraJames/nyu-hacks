@@ -2,3 +2,4 @@ node_modules/
 .env
 firebase-service-account.json
 .DS_Store
+server_test.js 

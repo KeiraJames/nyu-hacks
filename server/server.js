@@ -1,83 +1,64 @@
-const path = require('path');
-const express = require('express');
-const http = require('http'); 
-const socketIo = require('socket.io'); 
-const cors = require('cors');
-require('dotenv').config();
+import path from 'path';
+import express from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io'; 
+import cors from 'cors';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-const corsOptions = require('./configs/corsOptions');
-const logger = require('./middleware/logger');
+/////////////////////// Custom modules ///////////////////////
+import corsOptions from './configs/corsOptions.js';
+import logger from './middleware/logger.js';
+///////////////////////////////////////////////////////////////
 
-const userRoutes = require("./routes/test"); 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 
 const app = express();
-const server = http.createServer(app); 
-const io = socketIo(server); 
+const httpServer = createServer(app); 
+const io = new Server(httpServer, { cors: corsOptions }); 
 const PORT = process.env.PORT || 3000;
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////// MIDDLEWARE ////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////
-app.use(cors(corsOptions));
-app.use(logger);
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////// SERVE STATIC FILE///////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////
-app.use(express.static(path.join(__dirname, '../client', 'public')));
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////// API ROUTES ////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const { createUser, getAllUsers, getUserById, updateUser, deleteUser } = require("./models/test");
-
-
-app.get("/test", async (req, res) => {
-  try {
-    const snapshot = await db.collection("users").get();
-    const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    res.json({ message: "Firestore connected!", users });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.get('/api/hello', (req, res) => {
-  res.json({ message: 'Hello from the server!' });
-});
-
 
 const rooms = {};
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////// SOCKET.IO LOGIC //////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////// Middleware ///////////////////////////
+app.use(logger);
+app.use(cors(corsOptions));
+app.use(express.static(join(__dirname, '../client', 'public')));
+
+
 
 io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`);
 
-    
+   
     socket.on('create or join', (room) => {
         console.log(`Received request to join room ${room}`);
 
-        const clientsInRoom = rooms[room] ? rooms[room].length : 0;
-        
+        const clientsInRoom = rooms[room] ? rooms[room].clients.length : 0;
+        let userRole;
+
         if (clientsInRoom === 0) {
-            rooms[room] = [socket.id];
+            userRole = 'Parent';
+            rooms[room] = {
+                clients: [{ id: socket.id, role: userRole }],
+                storyState: { currentStory: 0, currentLine: 0, isActive: true } 
+            };
             socket.join(room);
-            socket.emit('created', room, socket.id);
-            console.log(`Room created: ${room}. User ${socket.id} is the first.`);
+            
+            socket.emit('role_assigned', room, socket.id, userRole);
+            console.log(`Room created: ${room}. User ${socket.id} is ${userRole}.`);
 
         } else if (clientsInRoom === 1) {
-            rooms[room].push(socket.id);
+            userRole = 'Child';
+            rooms[room].clients.push({ id: socket.id, role: userRole });
             socket.join(room);
-            socket.emit('joined', room, socket.id);
             
+            socket.emit('role_assigned', room, socket.id, userRole);
             
-            socket.to(room).emit('join', room); 
-            console.log(`User ${socket.id} joined room ${room}. Two users now.`);
+            socket.to(room).emit('join', room);
+            console.log(`User ${socket.id} joined room ${room}. Role: ${userRole}.`);
 
         } else { 
             socket.emit('full', room);
@@ -85,23 +66,40 @@ io.on('connection', (socket) => {
         }
     });
 
-   
+
     socket.on('message', (message) => {
-        console.log(`Server received message: ${message.type || 'unknown'}`);
-       
+        console.log(`Server received WebRTC signal: ${message.type || 'unknown'}`);
         socket.broadcast.emit('message', message);
     });
+    
+ 
+    socket.on('end_call', (room) => {
+        console.log(`User ${socket.id} ended call in room ${room}.`);
+        
 
-   
+        socket.to(room).emit('call_ended');
+        
+       
+        if (rooms[room]) {
+             delete rooms[room];
+             console.log(`Room ${room} closed and cleaned up.`);
+        }
+    });
+
+
+
     socket.on('disconnect', () => {
         console.log(`User disconnected: ${socket.id}`);
-       
+        
         for (const room in rooms) {
-            const index = rooms[room].indexOf(socket.id);
+            const index = rooms[room].clients.findIndex(client => client.id === socket.id);
             if (index !== -1) {
-                rooms[room].splice(index, 1);
+               
+                socket.to(room).emit('call_ended');
                 
-                if (rooms[room].length === 0) {
+                rooms[room].clients.splice(index, 1);
+                
+                if (rooms[room].clients.length === 0) {
                     delete rooms[room];
                     console.log(`Room ${room} closed.`);
                 }
@@ -112,7 +110,6 @@ io.on('connection', (socket) => {
 });
 
 
-
-server.listen(PORT, () => { 
-  console.log(`Server is running on http://localhost:${PORT}`);
+httpServer.listen(PORT, () => { 
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
