@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>On The Go Storyteller</title>
+    <title>FaceyBuk</title>
     <link rel="stylesheet" href="css/parent.css" />
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
@@ -42,7 +42,7 @@
 
                     <!-- Controls -->
                     <div class="controls">
-                        <button class="control-button" type="button">speaker</button>
+                        <button class="control-button" type="button"><a href="index.html">new story</a></button>
                         <button
                             id="endCallButton"
                             class="control-button end-call"
@@ -56,7 +56,7 @@
             </div>
         </div>
 
-        <!-- Phone 2: Overview Screen -->
+      
         <div class="phone-wrapper" id="overview-screen">
             <div class="phone-frame">
                 <div class="phone-screen">
@@ -65,23 +65,25 @@
                         <div class="recommendations">
                             <h3 class="recommendations-title">Recommended Stories</h3>
                             <p class="recommendations-subtitle">
-                                *based on child comprehension level
+                                Have you read these?
                             </p>
                             <div class="story-grid">
-                                <div class="story-card"></div>
-                                <div class="story-card"></div>
+                                <div class="story-card"><img src="images/characters/moon.png" alt="Moon character image"></div>
+                                <div class="story-card"><img src="images/characters/turtle.png" alt="Moon character image"></div>
+                                <!-- <div class="story-card"> <img src="images/characters/moon.png" ></div> -->
+                                <!-- <div class="story-card"> <img src="images/characters/moon.png" ></div> -->
                             </div>
                         </div>
                     </div>
                     <div class="controls">
-                        <button class="control-button" type="button">speaker</button>
+                        <!-- <button class="control-button" type="button">speaker</button> -->
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Hidden RTC controls for tst.js -->
+   
     <input
         type="hidden"
         id="userRoleInput"
@@ -108,12 +110,12 @@
         if (!endBtn || !inCallScreen || !overviewScreen) return;
 
         endBtn.addEventListener("click", () => {
-            // Only mobile (<901px)
+            
             if (window.innerWidth <= 900) {
-                // Switch screens
+              
                 inCallScreen.style.display = "none";
-                overviewScreen.style.display = "flex";   // override default "display:none"
-                overviewScreen.classList.add("show");    // if your CSS has show logic
+                overviewScreen.style.display = "flex";   
+                overviewScreen.classList.add("show");    
             }
         });
     });

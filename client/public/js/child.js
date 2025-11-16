@@ -1,6 +1,3 @@
-// This script is specific to child-page.html
-// It handles receiving and displaying exercises from the parent.
-
 document.addEventListener('DOMContentLoaded', () => {
     const wordDisplay = document.getElementById('word-display');
     const choicesContainer = document.getElementById('choices-container');
@@ -19,10 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
         wordDisplay.textContent = exercise.word;
         promptText.textContent = exercise.prompt;
 
-        // Show choices after a delay to allow the child to read the word first
+        
         setTimeout(() => {
             promptText.textContent = 'Now, which one is it?';
-            // Shuffle choices so the correct answer isn't always in the same spot
+            
             exercise.choices.sort(() => Math.random() - 0.5);
 
             exercise.choices.forEach((choice, index) => {
@@ -36,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 choiceEl.appendChild(img);
                 
                 choiceEl.addEventListener('click', () => {
-                    // Disable all buttons after a choice is made
+                    
                     document.querySelectorAll('.choice-item').forEach(el => {
                         el.style.pointerEvents = 'none';
                         el.style.opacity = '0.6';
@@ -51,26 +48,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         choiceEl.classList.add('incorrect');
                         promptText.textContent = "Not quite, but good try!";
                     }
-                    // Notify parent of the choice
+                    
                     window.socket.emit('child_response', { room, isCorrect: choice.isCorrect });
                 });
                 choicesContainer.appendChild(choiceEl);
             });
-        }, 3000); // 3-second delay
+        }, 3000); 
     }
 
-    // Get room name from the input field when joining
+    
     document.getElementById('joinButton').addEventListener('click', () => {
         room = document.getElementById('roomInput').value.trim();
     });
 
-    // Listen for exercises from the parent
+    
     window.socket.on('learning_exercise', (data) => {
         console.log('Received learning exercise:', data);
         displayExercise(data.exercise);
     });
 
-    // When a call is ended, clear the interactive elements
+    
     document.getElementById('endCallButton').addEventListener('click', () => {
         clearExercise();
     });
