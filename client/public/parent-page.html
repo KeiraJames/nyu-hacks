@@ -14,9 +14,20 @@
             <div class="phone-frame">
                 <div class="phone-screen">
                     <div class="screen-content">
+                        <!-- STORY / TRANSCRIPTION AREA -->
                         <div class="transcription-box">
-                            <!-- Use #status so tst.js can write here -->
-                            <p id="status" class="transcription-text">Ready to start/join a call.</p>
+                            <!-- tst.js uses #status as the story text display -->
+                            <p id="status" class="transcription-text">
+                                Ready to start/join a call.
+                            </p>
+                            <span class="cursor"></span>
+                        </div>
+
+                        <!-- NEW: Next line button for narrator (Parent only) -->
+                        <div class="transcription-controls">
+                            <button id="nextLineButton" class="next-line-button" type="button">
+                                Next line
+                            </button>
                         </div>
 
                         <!-- VIDEO AREA: remote + local PiP -->
@@ -31,8 +42,13 @@
 
                     <!-- Controls -->
                     <div class="controls">
-                        <button class="control-button">speaker</button>
-                        <button id="endCallButton" class="control-button end-call" style="display:none;">
+                        <button class="control-button" type="button">speaker</button>
+                        <button
+                            id="endCallButton"
+                            class="control-button end-call"
+                            type="button"
+                            style="display:none;"
+                        >
                             end call
                         </button>
                     </div>
@@ -58,7 +74,7 @@
                         </div>
                     </div>
                     <div class="controls">
-                        <button class="control-button">speaker</button>
+                        <button class="control-button" type="button">speaker</button>
                     </div>
                 </div>
             </div>
@@ -66,34 +82,41 @@
     </main>
 
     <!-- Hidden RTC controls for tst.js -->
-    <input type="hidden" id="userRoleInput" value="Parent" class="hidden-rtc" />
-    <input type="hidden" id="roomInput" value="test-room" class="hidden-rtc" />
-    <button id="joinButton" class="hidden-rtc">Start Story Call</button>
+    <input
+        type="hidden"
+        id="userRoleInput"
+        value="Parent"
+        class="hidden-rtc"
+    />
+    <input
+        type="hidden"
+        id="roomInput"
+        value="test-room"
+        class="hidden-rtc"
+    />
+    <button id="joinButton" class="hidden-rtc" type="button">
+        Start Story Call
+    </button>
 
     <script src="js/tst.js"></script>
     <script>
-document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
+        const endBtn = document.getElementById("endCallButton");
+        const inCallScreen = document.getElementById("in-call-screen");
+        const overviewScreen = document.getElementById("overview-screen");
 
-    const endBtn = document.getElementById("endCallButton");
-    const inCallScreen = document.getElementById("in-call-screen");
-    const overviewScreen = document.getElementById("overview-screen");
+        if (!endBtn || !inCallScreen || !overviewScreen) return;
 
-    if (!endBtn || !inCallScreen || !overviewScreen) return;
-
-    endBtn.addEventListener("click", () => {
-
-        // Only mobile (<901px)
-        if (window.innerWidth <= 900) {
-            // Switch screens
-            inCallScreen.style.display = "none";
-            overviewScreen.style.display = "flex";   // override default "display:none"
-            overviewScreen.classList.add("show");    // if your CSS has show logic
-        }
-
+        endBtn.addEventListener("click", () => {
+            // Only mobile (<901px)
+            if (window.innerWidth <= 900) {
+                // Switch screens
+                inCallScreen.style.display = "none";
+                overviewScreen.style.display = "flex";   // override default "display:none"
+                overviewScreen.classList.add("show");    // if your CSS has show logic
+            }
+        });
     });
-
-});
-</script>
-
+    </script>
 </body>
 </html>

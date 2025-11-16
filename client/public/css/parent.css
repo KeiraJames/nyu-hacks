@@ -59,6 +59,72 @@ body {
     flex-direction: column;
 }
 
+/* TOP STORY / TRANSCRIPTION AREA */
+.transcription-box {
+    background-color: #ffffff;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    margin-bottom: 0.5rem;
+}
+
+.transcription-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1f2937;
+    min-height: 3rem;
+    display: inline;
+    word-break: break-word;
+}
+
+.cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.25rem;
+    background-color: #1f2937;
+    animation: blink 1s step-end infinite;
+    margin-left: 4px;
+    vertical-align: text-bottom;
+}
+
+@keyframes blink {
+    from,
+    to {
+        background-color: transparent;
+    }
+    50% {
+        background-color: #1f2937;
+    }
+}
+
+/* NEW: Next line button under transcription */
+.transcription-controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.75rem;
+}
+
+.next-line-button {
+    background-color: #ffffff;
+    border-radius: 9999px;
+    border: none;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.08),
+        0 1px 2px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    color: #111827;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.next-line-button:active {
+    transform: scale(0.96);
+}
+
 .video-call-container {
     flex-grow: 1;
     position: relative;
@@ -69,7 +135,7 @@ body {
     overflow: hidden;
     box-shadow:
         0 10px 15px -3px rgba(0, 0, 0, 0.93),
-        0 4px 6px -4px rgba(0, 0, 0, 0.2),
+        0 4px 6px -4px rgba(0,  0, 0, 0.2),
         inset 0 2px 4px 0 rgba(255, 255, 255, 0.1);
 }
 
@@ -103,38 +169,6 @@ body {
     height: 100%;
     object-fit: cover;
     transform: scaleX(-1);
-}
-
-.transcription-box {
-    background-color: #ffffff;
-    padding: 1rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    margin-bottom: 1rem;
-}
-
-.transcription-text {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #1f2937;
-    min-height: 3rem;
-    display: inline;
-    word-break: break-word;
-}
-
-.cursor {
-    display: inline-block;
-    width: 2px;
-    height: 1.25rem;
-    background-color: #1f2937;
-    animation: blink 1s step-end infinite;
-    margin-left: 4px;
-    vertical-align: text-bottom;
-}
-
-@keyframes blink {
-    from, to { background-color: transparent; }
-    50% { background-color: #1f2937; }
 }
 
 .overview-header {

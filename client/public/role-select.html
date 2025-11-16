@@ -1,0 +1,98 @@
+<!-- client/public/role-select.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Choose Role - On The Go Storyteller</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f9fafb;
+      color: #111827;
+    }
+    .wrapper {
+      max-width: 420px;
+      width: 100%;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      color: #4b5563;
+    }
+    .btn-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .role-btn {
+      flex: 1;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.85rem 0;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.07);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .role-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+    }
+    .parent {
+      background: #111827;
+      color: white;
+    }
+    .child {
+      background: white;
+      color: #111827;
+      border: 1px solid #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h1>Who’s using this device?</h1>
+    <p>Select whether this screen is for the parent or the child.</p>
+
+    <div class="btn-row">
+      <button class="role-btn parent" id="parentBtn" type="button">Parent</button>
+      <button class="role-btn child" id="childBtn" type="button">Child</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const selectedStory = localStorage.getItem("selectedStory");
+      if (selectedStory === null) {
+        // No story selected, go back to index
+        window.location.href = "index.html";
+        return;
+      }
+
+      document.getElementById("parentBtn").addEventListener("click", () => {
+        localStorage.setItem("userRole", "Parent");
+        window.location.href = "parent-page.html";
+      });
+
+      document.getElementById("childBtn").addEventListener("click", () => {
+        localStorage.setItem("userRole", "Child");
+        window.location.href = "child-page.html";
+      });
+    });
+  </script>
+</body>
+</html>
