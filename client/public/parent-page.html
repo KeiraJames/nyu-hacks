@@ -48,7 +48,8 @@
 
             header,
             #controls,
-            .grid h2 {
+            .grid h2,
+            main h2 {
                 display: none;
             }
 
@@ -65,7 +66,7 @@
             #localVideo {
                 /* most top layer */
                 position: absolute;
-                
+
                 width: 150px;
                 height: 200px;
                 bottom: 20px;
@@ -108,7 +109,7 @@
             </button>
         </div>
 
-        <div id="videoGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- <div id="videoGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="flex flex-col items-center">
                 <h2 class="text-xl font-semibold mb-3 text-indigo-300">Remote Video</h2>
                 <div class="video-container"><video id="remoteVideo" autoplay playsinline></video></div>
@@ -116,9 +117,19 @@
             <div class="flex flex-col items-center">
                 <h2 class="text-xl font-semibold mb-3 text-indigo-300">My Video</h2>
                 <div class="video-container"><video id="localVideo" autoplay muted playsinline></video></div>
-            </div>
+            </div> -->
+
+        <!-- <main class="w-full max-w-4xl"> -->
+        <div id="video-container class=" relative w-full h-screen">
+            <video id="remoteVideo" autoplay playsinline></video>
+
+            <video id="localVideo" autoplay muted playsinline></video>
+        </div>
+        <!-- </main> -->
 
         </div>
+
+
 
         <div id="parent-view" class="w-full mt-8 p-6 bg-gray-900 rounded-xl">
             <h2 class="text-xl font-semibold text-gray-400 mb-3">Storyteller (Parent)</h2>
