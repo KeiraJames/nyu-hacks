@@ -2,6 +2,9 @@
 
 An interactive, real-time storytelling application that connects parents and children through shared reading experiences, no matter the distance.
 
+<img width="756" height="455" alt="Screenshot_2025-11-16_at_10 09 55_AM" src="https://github.com/user-attachments/assets/0633c67d-52e6-4b2e-9ebb-6d60a22938cd" />
+
+
 ---
 
 ## 💡 Inspiration
