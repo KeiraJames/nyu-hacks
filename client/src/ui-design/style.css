@@ -1,0 +1,215 @@
+/* General Body Styles */
+body {
+    background-color: white
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.header h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    letter-spacing: -0.025em;
+}
+
+/* Main container for phones */
+.phones-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4rem 4rem;
+}
+
+.phone-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+#overview-screen {
+    display: none;
+}
+
+.phone-label {
+    font-size: 1.25rem;
+    color: #9ca3af;
+    margin-bottom: 0.75rem;
+    margin-left: 1rem;
+    font-weight: 500;
+}
+
+/* Phone Mockup Styles */
+.phone-frame {
+    width: 375px;
+    height: 750px;
+    background-color: #e0e0e0;
+    border-radius: 48px;
+    padding: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 2px solid black;
+}
+
+.phone-screen {
+    background-color: #f0f0f0;
+    width: 100%;
+    height: 100%;
+    border-radius: 36px;
+    display: flex;
+    flex-direction: column;
+    color: #1f2937;
+    padding: 1.5rem 1rem;
+    box-sizing: border-box;
+    overflow: hidden; /* Important for inner radius */
+}
+
+.screen-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* InCallScreen Specifics */
+.video-call-container {
+    flex-grow: 1;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.93), 0 4px 6px -4px rgba(0, 0, 0, 0.2), inset 0 2px 4px 0 rgba(255, 255, 255, 0.1);
+}
+
+.self-view-feed {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    width: 90px;
+    height: 120px;
+    background-size: cover;
+    background-position: center;
+    /* border-radius: 0.75rem; */
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.transcription-box {
+    background-color: #ffffff;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+}
+
+.transcription-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1f2937;
+    min-height: 3rem; /* to prevent layout shift */
+    display: inline;
+    word-break: break-word;
+}
+
+.cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.25rem;
+    background-color: #1f2937;
+    animation: blink 1s step-end infinite;
+    margin-left: 4px;
+    vertical-align: text-bottom;
+}
+
+@keyframes blink {
+    from, to { background-color: transparent; }
+    50% { background-color: #1f2937; }
+}
+
+/* OverviewScreen Specifics */
+.overview-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 4rem;
+    color: #374151;
+}
+
+.recommendations {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.recommendations-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    color: #374151;
+}
+
+.recommendations-subtitle {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+}
+
+.story-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.story-card {
+    background-color: #ffffff;
+    aspect-ratio: 1 / 1;
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+
+/* Controls at the bottom */
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 1.5rem;
+    gap: 2rem;
+}
+
+.control-button {
+    background-color: #ffffff;
+    width: 80px;
+    height: 80px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s ease-in-out;
+}
+
+.control-button:active {
+    transform: scale(0.95);
+}
+
+.control-button.end-call {
+    background-color: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}

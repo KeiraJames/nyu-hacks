@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>On The Go Storyteller</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+   
+
+    <main class="phones-container">
+        <!-- Phone 1: In-Call Screen -->
+        <div class="phone-wrapper" id="in-call-screen">
+            
+            <div class="phone-frame">
+                <div class="phone-screen">
+                    <div class="screen-content">
+                        <div class="transcription-box">
+                            <p id="transcription-text" class="transcription-text"></p><span class="cursor"></span>
+                        </div>
+                        <div class="video-call-container">
+                            <div class="self-view-feed"></div>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button class="control-button">speaker</button>
+                        <button id="end-call-button" class="control-button end-call">end call</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phone 2: Overview Screen -->
+        <div class="phone-wrapper" id="overview-screen">
+           
+            <div class="phone-frame">
+                <div class="phone-screen">
+                    <div class="screen-content">
+                        <h2 class="overview-header">Overview</h2>
+                        <div class="recommendations">
+                            <h3 class="recommendations-title">Recommended Stories</h3>
+                            <p class="recommendations-subtitle">*based on child comprehension level</p>
+                            <div class="story-grid">
+                                <div class="story-card"></div>
+                                <div class="story-card"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button class="control-button">speaker</button>
+                        <button class="control-button end-call">end call</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Typing animation ---
+            const storyText = "The first little pig was very lazy.";
+            const transcriptionElement = document.getElementById('transcription-text');
+            const cursorElement = document.querySelector('#in-call-screen .cursor');
+            let index = 0;
+
+            function type() {
+                if (index < storyText.length) {
+                    transcriptionElement.textContent += storyText.charAt(index);
+                    index++;
+                    setTimeout(type, 100);
+                } else {
+                    if(cursorElement) {
+                       cursorElement.style.animation = 'none';
+                       cursorElement.style.backgroundColor = 'transparent';
+                    }
+                }
+            }
+            type();
+
+            // --- Screen switching logic ---
+            const endCallButton = document.getElementById('end-call-button');
+            const inCallScreen = document.getElementById('in-call-screen');
+            const overviewScreen = document.getElementById('overview-screen');
+
+            endCallButton.addEventListener('click', () => {
+                inCallScreen.style.display = 'none';
+                overviewScreen.style.display = 'flex';
+            });
+        });
+    </script>
+</body>
+</html>
