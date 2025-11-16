@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>On The Go</title>
+    <link rel="stylesheet" href="../css/parent.css">
+</head>
+<body>
+
+   <div id="app-container">
+        
+        <!-- Hidden input for role, required by tst.js -->
+        <input type="hidden" id="userRoleInput" value="Parent">
+
+        <!-- Video elements for the call, required by tst.js -->
+        <div id="video-wrapper">
+            <video id="remoteVideo" autoplay playsinline></video>
+            <video id="localVideo" autoplay muted playsinline></video>
+        </div>
+
+        <!-- Call Overview & Setup View -->
+        <main id="overview-view" class="parent-view">
+            <div class="setup-controls">
+                <h1 id="status">Enter a room name to start.</h1>
+                <input type="text" id="roomInput" placeholder="Enter Room Name" value="story-time">
+                <button id="joinButton" class="btn btn-primary">Start / Join Story</button>
+            </div>
+
+            <div class="story-recommendations">
+                <h2>Recommended Stories</h2>
+                <p>*based on child comprehension level</p>
+                <div class="recommendations">
+                    <div class="story-placeholder"></div>
+                    <div class="story-placeholder"></div>
+                </div>
+            </div>
+             <p id="role-display" class="role-text">Role: Parent</p>
+        </main>
+
+        <!-- Active Call UI elements -->
+        <div id="active-call-ui">
+            <div id="parent-story-display" class="transcription-box">
+                The first little pig was very lazy.
+            </div>
+        </div>
+
+        <footer>
+            <div class="controls">
+                <div class="control-buttons">
+                    <!-- IDs speakerButton and endCallButton are required by tst.js -->
+                    <button class="btn btn-circle" id="speakerButton" aria-label="Toggle Speaker">speaker</button>
+                    <button class="btn btn-circle" id="endCallButton" aria-label="End Call">end call</button>
+                </div>
+                <!-- This button is required for the tst.js script -->
+                <button class="btn btn-rect" id="nextLineButton">Next Line</button>
+            </div>
+        </footer>
+
+        <!-- Hidden container for child-specific view, required by tst.js -->
+        <div id="child-view" style="display: none;"></div>
+        <!-- Hidden parent view div for tst.js -->
+        <div id="parent-view" style="display: none;"></div>
+    </div>
+
+
+    <!-- Scripts -->
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="../js/tst.js"></script>
+    <script type="module" src="../js/parent.js"></script>
+
+</body>
+</html>
