@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,29 +10,48 @@
     <style>
         /* Shared Styles */
         .video-container {
-            position: relative; width: 100%; padding-top: 75%; 
-            background-color: #1e293b; border-radius: 0.75rem;
-            overflow: hidden; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            width: 100%;
+            padding-top: 75%;
+            background-color: #1e293b;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
         }
+
         .video-container video {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
+
         @media (max-width: 600px) {
-            header, #controls, .grid h2 {
+
+            header,
+            #controls,
+            .grid h2 {
                 display: none;
             }
-            #localVideo { 
-            /* transform: scaleX(-1);  */
-            z-index: 999;
-            background-color: aqua;
-        }
-            #remoteVideo { 
-            /* ransform: scaleX(1); */
-            inset: 0;
-         }
+
+            #localVideo {
+                /* most top layer */
+                z-index: 999;
+                background-color: aqua;
+            }
+
+            #remoteVideo {
+                /* ransform: scaleX(1); */
+                /* inset: 0; */
+                width: 100%;
+                height: 100%;
+            }
         }
     </style>
 </head>
+
 <body class="bg-gray-900 text-white min-h-screen p-4 flex flex-col items-center">
 
     <header class="text-center mb-8 w-full max-w-4xl">
@@ -41,48 +61,58 @@
     </header>
 
     <main class="w-full max-w-4xl">
-        
+
         <input type="hidden" id="userRoleInput" value="Parent">
 
         <div id="controls" class="flex flex-col sm:flex-row gap-4 mb-8 p-4 bg-gray-800 rounded-xl shadow-lg">
-            <input type="text" id="roomInput" placeholder="Enter Room Name (e.g., 'story-call')" 
-                   class="flex-grow p-3 rounded-lg border border-indigo-600 bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition"
-                   value="test-room">
-            <button id="joinButton" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition">
+            <input type="text" id="roomInput" placeholder="Enter Room Name (e.g., 'story-call')"
+                class="flex-grow p-3 rounded-lg border border-indigo-600 bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition"
+                value="test-room">
+            <button id="joinButton"
+                class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition">
                 Start / Join Story
             </button>
-            <button id="endCallButton" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition" style="display: none;">
+            <button id="endCallButton"
+                class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition"
+                style="display: none;">
                 End Call
             </button>
         </div>
 
         <div id="videoGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="flex flex-col items-center"><h2 class="text-xl font-semibold mb-3 text-indigo-300">My Video</h2>
-                <div class="video-container"><video id="localVideo" autoplay muted playsinline></video></div>
-            </div>
-            <div class="flex flex-col items-center"><h2 class="text-xl font-semibold mb-3 text-indigo-300">Remote Video</h2>
+            <div class="flex flex-col items-center">
+                <h2 class="text-xl font-semibold mb-3 text-indigo-300">Remote Video</h2>
                 <div class="video-container"><video id="remoteVideo" autoplay playsinline></video></div>
             </div>
+            <div class="flex flex-col items-center">
+                <h2 class="text-xl font-semibold mb-3 text-indigo-300">My Video</h2>
+                <div class="video-container"><video id="localVideo" autoplay muted playsinline></video></div>
+            </div>
+            
         </div>
 
         <div id="parent-view" class="w-full mt-8 p-6 bg-gray-900 rounded-xl">
             <h2 class="text-xl font-semibold text-gray-400 mb-3">Storyteller (Parent)</h2>
-            <div id="parent-story-display" class="bg-gray-700 p-6 rounded-lg text-2xl font-serif text-white min-h-[150px] mb-4">
+            <div id="parent-story-display"
+                class="bg-gray-700 p-6 rounded-lg text-2xl font-serif text-white min-h-[150px] mb-4">
                 Click "Start / Join Story" above to begin.
             </div>
             <div class="flex justify-between items-center mt-4">
-                <button id="speakerButton" class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-full w-28">
+                <button id="speakerButton"
+                    class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-full w-28">
                     Speaker
                 </button>
-                <button id="nextLineButton" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition">
+                <button id="nextLineButton"
+                    class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition">
                     Next Line ➡️
                 </button>
             </div>
         </div>
-        
+
         <div id="child-view" style="display: none;"></div>
     </main>
 
     <script src="/js/tst.js"></script>
 </body>
+
 </html>
