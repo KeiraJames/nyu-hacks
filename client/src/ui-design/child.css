@@ -1,0 +1,131 @@
+body {
+    margin: 0;
+    /* dark outer background like your mockup */
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* White rounded device frame */
+.frame, .app {
+    background: #f8f8f8;
+    width: 90%;
+    max-width: 1100px;
+    min-height: 650px;
+    padding: 35px;
+    border-radius: 32px;
+
+    /* soft shadow like screenshot */
+    box-shadow:
+        0 6px 20px rgba(0,0,0,0.15),
+        inset 0 2px 8px rgba(255,255,255,0.7);
+
+    display: grid;
+    grid-template-columns: 160px 1fr 120px;
+    gap: 30px;
+    position: relative;
+}
+
+/* LEFT COLUMN ---------------------------------- */
+.left, .left-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+}
+
+/* Speaker Icon */
+.icon-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+
+    box-shadow: 
+        0 3px 8px rgba(0,0,0,0.1),
+        inset 0 2px 6px rgba(255,255,255,0.7);
+    cursor: pointer;
+}
+
+/* Word Card */
+.word-box, .word-card {
+    padding: 12px 25px;
+    border-radius: 14px;
+    background: white;
+    border: 1px solid #e3e3e3;
+    font-size: 24px;
+    font-weight: 700;
+    box-shadow: 
+        0 3px 8px rgba(0,0,0,0.06),
+        inset 0 1px 4px rgba(255,255,255,0.9);
+}
+
+/* Circles with pictures */
+.choice img {
+    width: 78px;
+    height: 78px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #fff;
+
+    box-shadow:
+        0 3px 7px rgba(0,0,0,0.12),
+        inset 0 1px 4px rgba(255,255,255,0.7);
+}
+
+/* MAIN PANEL ---------------------------------- */
+.main-panel, .main-view {
+    background: #d1d4da; /* match big soft grey from screenshot */
+    border-radius: 28px;
+    position: relative;
+
+    box-shadow:
+        inset 0 4px 12px rgba(0,0,0,0.08),
+        0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* PICTURE IN PICTURE (bottom right) */
+.child-cam, .pip {
+    width: 130px;
+    height: 150px;
+    background: #9aa1ac;
+    border-radius: 14px;
+    border: 2px solid #e7e7e7;
+
+    position: absolute;
+    bottom: 28px;
+    right: 28px;
+
+    box-shadow: 
+        0 3px 10px rgba(0,0,0,0.15),
+        inset 0 3px 8px rgba(255,255,255,0.4);
+}
+
+/* RIGHT COLUMN ---------------------------------- */
+.right, .right-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+.round-btn {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: #fdfdfd;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,0.12),
+        inset 0 3px 8px rgba(255,255,255,0.6);
+    cursor: pointer;
+}
