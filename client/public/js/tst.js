@@ -1,117 +1,53 @@
-// client/public/js/webrtc-connection.js
-
-// Use DOMContentLoaded to ensure elements are available before script execution
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- DOM Elements ---
+
     const localVideo = document.getElementById('localVideo');
     const remoteVideo = document.getElementById('remoteVideo');
     const statusElement = document.getElementById('status');
-    const roleDisplayElement = document.getElementById('role-display');
     const joinButton = document.getElementById('joinButton');
-    const roomInput = document.getElementById('roomInput');
     const endCallButton = document.getElementById('endCallButton');
-
-    // Role-specific view containers
+    const roomInput = document.getElementById('roomInput');
     const userRoleInput = document.getElementById('userRoleInput');
-    const parentView = document.getElementById('parent-view');
-    const childView = document.getElementById('child-view');
-    const parentStoryDisplay = document.getElementById('parent-story-display');
-    const nextLineButton = document.getElementById('nextLineButton');
+    
+    const userRole = userRoleInput ? userRoleInput.value : 'Parent';
+    let room = null;
+    let pc = null;
+    let localStream = null;
 
+    const serverUrl = window.location.protocol + '//' + window.location.host;
+    const socket = io ? io(serverUrl) : null;
+    const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-    // --- Global WebRTC and Socket Variables ---
-    const serverUrl = window.location.protocol + '//' + window.location.host; 
-    const socket = io(serverUrl);
-    const configuration = { 
-        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] 
-    };
-    
-    let pc; 
-    let localStream; 
-    let room; 
-    
-    // CRITICAL: Read the role directly from the hidden input on the specific page
-    const userRole = userRoleInput ? userRoleInput.value : null; 
-
-    // --- Initialization & UI Setup ---
-    
-    // Set up the initial view based on the role read from the HTML page
-    if (userRole === 'Parent') {
-        parentView.style.display = 'block';
-        childView.style.display = 'none';
-        roleDisplayElement.textContent = `Role: Parent`;
-    } else if (userRole === 'Child') {
-        parentView.style.display = 'none';
-        childView.style.display = 'block';
-        roleDisplayElement.textContent = `Role: Child`;
-    }
-    
-    // --- Utility Functions ---
-    function updateStatus(message) {
-        statusElement.textContent = message;
+    function updateStatus(msg) {
+        if (statusElement) statusElement.textContent = msg;
+        console.log('[status]', msg);
     }
 
     function sendMessage(message) {
-        console.log('Client sending message:', message.type || message);
-        socket.emit('message', message);
-    }
-    
-    // --- End Call Function ---
-    function endCall(notifyServer = true) {
-        if (pc) {
-            pc.close();
-            pc = null;
-        }
-        if (localStream) {
-            localStream.getTracks().forEach(track => track.stop());
-            localStream = null;
-        }
-        
-        // Reset UI state
-        localVideo.srcObject = null;
-        remoteVideo.srcObject = null;
-        joinButton.disabled = false;
-        roomInput.disabled = false;
-        endCallButton.style.display = 'none';
-        
-        // Notify the server if this user initiated the disconnect
-        if (notifyServer) {
-            socket.emit('end_call', room);
-            updateStatus('Call ended. Enter a room to start a new call.');
-        } else {
-             updateStatus('Call ended by the other user.');
-        }
+        if (socket) socket.emit('message', message);
+        console.log('Sent message:', message.type || message);
     }
 
-    // --- Core WebRTC Functions ---
-    
     async function getMedia() {
         try {
-            localStream = await navigator.mediaDevices.getUserMedia({ 
-                video: true, 
-                audio: true 
-            });
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             localVideo.srcObject = localStream;
+            updateStatus('Local media stream acquired.');
             return true;
-        } catch (error) {
-            console.error('Error accessing media devices:', error);
+        } catch (err) {
+            console.error('getUserMedia error:', err);
             updateStatus('ERROR: Could not access camera/mic.');
             return false;
         }
     }
 
     function initializePeerConnection(isOfferer) {
-        if (pc || !localStream) {
-            console.warn('PC initialization aborted: already initialized or missing local stream.');
-            return;
-        }
-        
+        if (pc) return;
+        if (!localStream) return;
+
         pc = new RTCPeerConnection(configuration);
 
-        localStream.getTracks().forEach(track => {
-            pc.addTrack(track, localStream);
-        });
+        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
         pc.onicecandidate = (event) => {
             if (event.candidate) {
@@ -127,14 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
         pc.ontrack = (event) => {
             if (remoteVideo.srcObject !== event.streams[0]) {
                 remoteVideo.srcObject = event.streams[0];
-                console.log('Remote stream received.');
-                updateStatus('Video Call Active!');
+                updateStatus('Remote stream received — call active.');
             }
         };
-        
-        if (isOfferer) {
-            createOffer();
-        }
+
+        if (isOfferer) createOffer();
     }
 
     async function createOffer() {
@@ -142,129 +75,118 @@ document.addEventListener('DOMContentLoaded', () => {
             const offer = await pc.createOffer();
             await pc.setLocalDescription(offer);
             sendMessage(offer);
-            updateStatus('Offer created and sent. Waiting for remote answer...');
-        } catch (error) {
-            console.error('Error creating offer:', error);
+            updateStatus('Offer created and sent.');
+        } catch (err) {
+            console.error('createOffer error', err);
         }
     }
-    
-    // --- Room Joining Entry Point ---
+
     async function joinRoom() {
-        room = roomInput.value.trim();
-        if (room === '') {
-            updateStatus('Please enter a valid room name.');
+        room = roomInput ? roomInput.value.trim() : 'default-room';
+        if (!room) {
+            updateStatus('Please enter a room name.');
             return;
         }
-        if (!userRole) {
-            updateStatus('Error: Role not defined. Please refresh from landing page.');
+
+        updateStatus(`Joining room: ${room} ...`);
+        if (joinButton) joinButton.disabled = true;
+        if (roomInput) roomInput.disabled = true;
+
+        const ok = await getMedia();
+        if (!ok) {
+            if (joinButton) joinButton.disabled = false;
+            if (roomInput) roomInput.disabled = false;
             return;
         }
-        
-        updateStatus(`Attempting to join room: ${room}...`);
-        joinButton.disabled = true;
-        roomInput.disabled = true;
 
-        const mediaReady = await getMedia();
+        if (!socket) return updateStatus('Socket.IO not available.');
 
-        if (mediaReady) {
-            // Send the explicit role to the server
-            socket.emit('create or join', room, userRole); 
-            endCallButton.style.display = 'block'; 
-        } else {
-            // Re-enable button if media access failed
-            joinButton.disabled = false;
-            roomInput.disabled = false;
-        }
-       
+        socket.emit('create or join', room, userRole);
+        if (endCallButton) endCallButton.style.display = 'inline-block';
     }
 
-    // --- Socket.IO Handlers ---
+    function endCall(notifyServer = true) {
+        if (pc) { pc.close(); pc = null; }
+        if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+        if (localVideo) localVideo.srcObject = null;
+        if (remoteVideo) remoteVideo.srcObject = null;
 
-    // Sets the role based on server acceptance (mostly confirmation now)
-    socket.on('role_assigned', (roomName, id, role) => {
-        console.log(`Role accepted: ${role} in room ${roomName}`);
-        room = roomName;
-        
-        if (role === 'Parent') {
-            updateStatus(`Room '${roomName}' created. You are the Parent (Initiator). Waiting for Child...`);
+        if (joinButton) joinButton.disabled = false;
+        if (roomInput) roomInput.disabled = false;
+        if (endCallButton) endCallButton.style.display = 'none';
+
+        if (notifyServer && socket && room) {
+            socket.emit('end_call', room);
+            updateStatus('Call ended. Ready to start/join again.');
         } else {
-             updateStatus(`Joined room '${roomName}'. You are the Child (Answerer). Waiting for Parent...`);
+            updateStatus('Call ended.');
         }
-    });
+    }
 
-    // Triggered when the second user joins
-    socket.on('join', (room) => {
-         console.log(`Another user joined the room ${room}. Starting negotiation.`);
-         updateStatus(`The ${userRole === 'Parent' ? 'Child' : 'Parent'} has joined. Starting WebRTC connection...`);
-         
-         // Start negotiation immediately
-         initializePeerConnection(userRole === 'Parent'); 
-    });
-    
-    socket.on('message', async (message) => {
-        console.log('Client received message:', message.type || message);
+   
+    if (socket) {
+        socket.on('connect', () => updateStatus('Connected to signaling server. Ready.'));
+        
+        socket.on('role_assigned', (roomName, id, role) => {
+            room = roomName;
+            updateStatus(`Role assigned: ${role} in '${roomName}'.`);
+        });
 
-        if (message.type === 'offer') {
-            const processOffer = async () => {
-                if (!localStream) {
-                    console.log("Receiver: Local stream not ready. Retrying offer processing in 100ms...");
-                    setTimeout(processOffer, 100);
-                    return;
+        socket.on('join', (joinedRoom) => {
+            updateStatus(`Peer joined ${joinedRoom}. Starting negotiation...`);
+            initializePeerConnection(userRole === 'Parent');
+        });
+
+        socket.on('message', async (message) => {
+            if (!message || !message.type) return;
+
+            if (message.type === 'offer') {
+                const tryProcess = async () => {
+                    if (!localStream) { setTimeout(tryProcess, 100); return; }
+                    if (!pc) initializePeerConnection(false);
+                    await pc.setRemoteDescription(new RTCSessionDescription(message));
+                    const answer = await pc.createAnswer();
+                    await pc.setLocalDescription(answer);
+                    sendMessage(pc.localDescription);
+                    updateStatus('Answer sent — connection established.');
+                };
+                tryProcess();
+
+            } else if (message.type === 'answer') {
+                if (pc) {
+                    await pc.setRemoteDescription(new RTCSessionDescription(message));
+                    updateStatus('Answer received — connection established.');
                 }
-                if (!pc) {
-                     initializePeerConnection(false); 
+            } else if (message.type === 'candidate') {
+                if (pc) {
+                    const cand = new RTCIceCandidate({
+                        sdpMid: message.sdpMid,
+                        sdpMLineIndex: message.sdpMLineIndex,
+                        candidate: message.candidate
+                    });
+                    await pc.addIceCandidate(cand).catch(e => console.error(e));
+                    updateStatus('ICE candidate added.');
                 }
-                
-                await pc.setRemoteDescription(new RTCSessionDescription(message));
-                updateStatus('Received Offer. Creating Answer...');
-                const answer = await pc.createAnswer();
-                await pc.setLocalDescription(answer);
-                
-                sendMessage(pc.localDescription);
-            };
-            processOffer();
-
-        } else if (message.type === 'answer') {
-            await pc.setRemoteDescription(new RTCSessionDescription(message));
-            updateStatus('Connection established! Video stream starting.');
-
-        } else if (message.type === 'candidate') {
-            if (!pc) {
-                console.error("Received ICE candidate before RTCPeerConnection initialized.");
-                return;
+            } else if (message.type === 'full') {
+                updateStatus(`Room ${room} is full.`);
+                room = null;
             }
-            const candidate = new RTCIceCandidate({
-                sdpMid: message.sdpMid,
-                sdpMLineIndex: message.sdpMLineIndex,
-                candidate: message.candidate
-            });
-            await pc.addIceCandidate(candidate).catch(e => console.error('Error adding received ICE candidate:', e));
-            updateStatus('ICE candidate added.');
-        } else if (message.type === 'full') {
-            updateStatus(`Room ${room} is full! Please try a different room name.`);
-            room = null; 
-        }
-    });
+        });
 
-    // Handle remote peer ending the call
-    socket.on('call_ended', () => {
-        console.log("Remote peer ended the call.");
-        endCall(false); 
-    });
-    
+        socket.on('call_ended', () => endCall(false));
+        socket.on('disconnect', () => updateStatus('Disconnected from server.'));
+    }
+
     // --- Event Listeners ---
-    joinButton.addEventListener('click', joinRoom);
-    endCallButton.addEventListener('click', () => { endCall(true); }); 
+    if (joinButton) joinButton.addEventListener('click', joinRoom);
+    if (endCallButton) endCallButton.addEventListener('click', () => endCall(true));
 
-    // Placeholder for Next Line button logic (to be added)
-    nextLineButton?.addEventListener('click', () => {
-         if (userRole === 'Parent') {
-             console.log("Next Line button clicked. Ready to send sync signal.");
-             // socket.emit('next_line', room); // Logic to be implemented next
-         }
+    // --- Auto-start for Parent ---
+    if (userRole === 'Parent') joinRoom();
+
+    // Clean-up on page unload
+    window.addEventListener('beforeunload', () => {
+        if (socket) socket.close();
+        endCall(false);
     });
-    
-    window.onload = () => {
-         updateStatus('Server connected. Ready to start/join a call.');
-    };
 });

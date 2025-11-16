@@ -1,34 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Role</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            background-color: #111827; /* Tailwind gray-900 */
-        }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col items-center justify-center">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StoryTime</title>
+    <link rel="stylesheet" href="css/index.css">
 
-    <div class="w-full max-w-md p-8 bg-gray-800 rounded-xl shadow-2xl text-center">
-        <h1 class="text-4xl font-extrabold text-indigo-400 mb-8">CoCo Melon</h1>
-        <h2 class="text-3xl font-extrabold text-white mb-6">Are you?</h2>
-        <div class="flex flex-col gap-4">
-            
-            <a href="/parent-page.html"
-                class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition duration-300 transform hover:scale-105">
-                Parent
-            </a>
-            
-            <a href="/child-page.html"
-                class="px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition duration-300 transform hover:scale-105">
-                Child
-            </a>
-        </div>
-    </div>
+    <!-- POPPINS FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <main class="onboarding-card">
+        <section class="onboarding-card__visual">
+            <header>
+                <h1>StoryTime</h1>
+            </header>
+
+            <div class="turtle-container">
+                <img src="images/turtle.jpeg" alt="Turtle Illustration" />
+            </div>
+        </section>
+
+        <section class="onboarding-card__content">
+            <h2 id="step-title">Are you a...</h2>
+
+            <button class="nav-btn">
+                <a href="parent-page.html">Parent</a>
+            </button>
+
+            <button class="nav-btn">
+                <a href="child-page.html">Child</a>
+            </button>
+        </section>
+    </main>
 
 </body>
 </html>

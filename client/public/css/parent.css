@@ -1,253 +1,239 @@
-:root {
-    --background-color: #f0f0f0;
-    --text-color: #000000;
-    --button-bg: #e0e0e0;
-    --end-call-active-bg: #ff3b30;
-    --primary-action-bg: #007aff;
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    background-color: #1c1c1e;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    -webkit-tap-highlight-color: transparent;
-}
-
-#app-container {
-    width: 100%;
-    height: 100%;
-    max-width: 430px;
-    max-height: 932px;
-    background-color: var(--background-color);
-    border-radius: 40px;
-    overflow: hidden;
+body {
+    background-color: white;
+    color: #1f2937;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     display: flex;
     flex-direction: column;
-    position: relative;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-/* --- Video Elements --- */
-#video-wrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-}
-#remoteVideo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-#localVideo {
-    position: absolute;
-    bottom: 120px;
-    right: 20px;
-    width: 100px;
-    height: 150px;
-    border-radius: 20px;
-    object-fit: cover;
-    border: 2px solid rgba(255,255,255,0.5);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-
-/* --- UI Views --- */
-main, #active-call-ui {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: calc(100% - 110px); /* Full height minus footer */
-    padding: 20px;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 2rem;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    transition: opacity 0.5s ease-in-out, visibility 0.5s;
 }
 
-#overview-view {
+.phones-container {
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
-    text-align: center;
-    z-index: 2;
+    gap: 4rem 4rem;
+    width: 100%;
 }
 
-.setup-controls {
-    width: 100%;
+.phone-wrapper {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 40px;
-}
-.setup-controls h1 {
-    font-size: 1.2rem;
-    font-weight: 500;
-    margin: 0;
-    min-height: 40px;
-}
-.setup-controls input {
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    width: 80%;
-    font-size: 1rem;
-    text-align: center;
-}
-
-.story-recommendations {
-    margin-top: auto;
-}
-.story-recommendations h2 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin: 0;
-}
-.story-recommendations p {
-    color: #8e8e93;
-    font-size: 0.9rem;
-    margin-top: 5px;
-}
-.recommendations {
-    display: flex;
-    gap: 20px;
-    margin-top: 20px;
-}
-.story-placeholder {
-    width: 120px;
-    height: 120px;
-    background-color: #e0e0e0;
-    border-radius: 20px;
-}
-.role-text {
-    position: absolute;
-    bottom: 20px;
-    font-size: 0.8rem;
-    color: #aaa;
-}
-
-
-#active-call-ui {
-    justify-content: flex-start;
     align-items: flex-start;
-    padding-top: 60px;
-    z-index: 1;
-}
-.transcription-box {
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 16px;
-    font-size: 1.1rem;
-    max-width: 90%;
-    backdrop-filter: blur(10px);
 }
 
-/* --- Footer Controls --- */
-footer {
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    background-color: var(--background-color);
-    padding: 20px;
-    box-sizing: border-box;
-    z-index: 3;
-    border-top: 1px solid #dcdcdc;
-    border-bottom-left-radius: 40px;
-    border-bottom-right-radius: 40px;
+#overview-screen {
+    display: none;
 }
+
+.phone-frame {
+    width: 375px;
+    height: 750px;
+    background-color: #e0e0e0;
+    border-radius: 48px;
+    padding: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 2px solid black;
+}
+
+.phone-screen {
+    background-color: #f0f0f0;
+    width: 100%;
+    height: 100%;
+    border-radius: 36px;
+    display: flex;
+    flex-direction: column;
+    color: #1f2937;
+    padding: 1.5rem 1rem;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.screen-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-call-container {
+    flex-grow: 1;
+    position: relative;
+    background-color: #d1d5db;
+    background-size: cover;
+    background-position: center;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow:
+        0 10px 15px -3px rgba(0, 0, 0, 0.93),
+        0 4px 6px -4px rgba(0, 0, 0, 0.2),
+        inset 0 2px 4px 0 rgba(255, 255, 255, 0.1);
+}
+
+.video-call-container video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.self-view-feed {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    width: 90px;
+    height: 120px;
+    background-color: #9ca3af;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+        0 10px 15px -3px rgba(0, 0, 0, 0.2),
+        0 4px 6px -4px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    overflow: hidden;
+}
+
+.self-view-feed video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+.transcription-box {
+    background-color: #ffffff;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+}
+
+.transcription-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1f2937;
+    min-height: 3rem;
+    display: inline;
+    word-break: break-word;
+}
+
+.cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.25rem;
+    background-color: #1f2937;
+    animation: blink 1s step-end infinite;
+    margin-left: 4px;
+    vertical-align: text-bottom;
+}
+
+@keyframes blink {
+    from, to { background-color: transparent; }
+    50% { background-color: #1f2937; }
+}
+
+.overview-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 4rem;
+    color: #374151;
+}
+
+.recommendations {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.recommendations-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    color: #374151;
+}
+
+.recommendations-subtitle {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+}
+
+.story-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.story-card {
+    background-color: #ffffff;
+    aspect-ratio: 1 / 1;
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
 .controls {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    padding-top: 1.5rem;
+    gap: 2rem;
 }
-.control-buttons {
+
+.control-button {
+    background-color: #ffffff;
+    width: 80px;
+    height: 80px;
+    border-radius: 9999px;
     display: flex;
-    gap: 15px;
-}
-.btn {
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
     border: none;
     cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    transition: transform 0.1s ease-in-out;
 }
-.btn:active {
+
+.control-button:active {
     transform: scale(0.95);
 }
-.btn-primary {
-    background-color: var(--primary-action-bg);
-    color: white;
-    padding: 15px 25px;
-    border-radius: 10px;
-    width: 85%;
-}
-.btn-circle {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background-color: var(--button-bg);
-    color: var(--text-color);
-}
-#endCallButton {
-    background-color: var(--end-call-active-bg);
-    color: white;
-}
-.btn-rect {
-    width: 100px;
-    height: 70px;
-    background-color: var(--button-bg);
-    border-radius: 20px;
+
+.control-button.end-call {
+    background-color: #ef4444;
+    color: #ffffff;
+    box-shadow:
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* --- State Management --- */
-/* Default state (out of call) */
-#app-container #active-call-ui,
-#app-container #video-wrapper {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-#app-container #overview-view {
-    opacity: 1;
-    visibility: visible;
-}
-#endCallButton {
-    display: none; /* Controlled by tst.js */
+.ended-call-view {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+    box-shadow: none;
 }
 
-/* In-call state */
-#app-container.in-call #active-call-ui,
-#app-container.in-call #video-wrapper {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: all;
+.ended-call-view h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #374151;
 }
-#app-container.in-call #overview-view {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+
+@media (min-width: 901px) {
+    #overview-screen {
+        display: flex;
+    }
 }
-#app-container.in-call footer {
-    background-color: transparent;
-    border-top: none;
-}
-#app-container.in-call .btn-circle {
-    background-color: rgba(255,255,255,0.3);
-    color: white;
-}
-#app-container.in-call #endCallButton {
-    background-color: var(--end-call-active-bg);
-}
-#app-container.in-call .btn-rect {
-    background-color: rgba(255,255,255,0.3);
+
+.hidden-rtc {
+    display: none !important;
 }

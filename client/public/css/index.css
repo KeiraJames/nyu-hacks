@@ -1,0 +1,131 @@
+:root {
+    --bg-purple: #b3a8e8;
+    --dark-text: #374151;
+    --light-gray: #e5e7eb;
+    --font-family: 'Poppins', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--light-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+.onboarding-card {
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    max-height: 760px;
+    background-color: rgba(145,147,227,0.91);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.onboarding-card__visual {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.onboarding-card__visual header {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.onboarding-card__visual header h1 {
+    color: white;
+    font-weight: 700;
+    font-size: 1.7rem;
+    text-align: center;
+}
+
+.turtle-container {
+    width: 240px;
+    height: 240px;
+}
+
+.turtle-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.onboarding-card__content {
+    background-color: white;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.onboarding-card__content h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 2rem;
+}
+
+.nav-btn {
+    width: 100%;
+    background-color: var(--dark-text);
+    color: white;
+    font-weight: 700;
+    font-size: 1.125rem;
+    padding: 1rem;
+    border: none;
+    border-radius: 9999px;
+    cursor: pointer;
+    margin-bottom: 1em;
+    transition: 0.2s ease;
+}
+
+.nav-btn:hover {
+    background-color: #4b5563;
+}
+
+.nav-btn a {
+    color: white !important;
+    text-decoration: none !important;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+@media (min-width: 900px) {
+    body {
+        padding: 3rem;
+    }
+    .onboarding-card {
+        max-width: 520px;
+        max-height: 820px;
+    }
+    .turtle-container {
+        width: 300px;
+        height: 300px;
+    }
+}

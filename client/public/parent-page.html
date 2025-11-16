@@ -1,76 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parent View</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>On The Go Storyteller</title>
+    <link rel="stylesheet" href="css/parent.css" />
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-    <style>
-        /* Shared Styles */
-        .video-container {
-            position: relative; width: 100%; padding-top: 75%; 
-            background-color: #1e293b; border-radius: 0.75rem;
-            overflow: hidden; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
-        }
-        .video-container video {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; 
-        }
-        #localVideo { transform: scaleX(-1); }
-        #remoteVideo { transform: scaleX(1); }
-    </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen p-4 flex flex-col items-center">
+<body>
+    <main class="phones-container">
+        <!-- Phone 1: In-Call Screen -->
+        <div class="phone-wrapper" id="in-call-screen">
+            <div class="phone-frame">
+                <div class="phone-screen">
+                    <div class="screen-content">
+                        <div class="transcription-box">
+                            <!-- Use #status so tst.js can write here -->
+                            <p id="status" class="transcription-text">Ready to start/join a call.</p>
+                        </div>
 
-    <header class="text-center mb-8 w-full max-w-4xl">
-        <h1 class="text-4xl font-extrabold text-indigo-400">P2P Story Call</h1>
-        <p id="status" class="mt-2 text-lg text-gray-400">Enter a room name to start or join a call.</p>
-        <p id="role-display" class="mt-1 text-xl font-bold text-green-400">Role: Parent</p>
-    </header>
+                        <!-- VIDEO AREA: remote + local PiP -->
+                        <div class="video-call-container">
+                            <video id="remoteVideo" autoplay playsinline></video>
 
-    <main class="w-full max-w-4xl">
-        
-        <input type="hidden" id="userRoleInput" value="Parent">
+                            <div class="self-view-feed">
+                                <video id="localVideo" autoplay muted playsinline></video>
+                            </div>
+                        </div>
+                    </div>
 
-        <div id="controls" class="flex flex-col sm:flex-row gap-4 mb-8 p-4 bg-gray-800 rounded-xl shadow-lg">
-            <input type="text" id="roomInput" placeholder="Enter Room Name (e.g., 'story-call')" 
-                   class="flex-grow p-3 rounded-lg border border-indigo-600 bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition"
-                   value="test-room">
-            <button id="joinButton" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition">
-                Start / Join Story
-            </button>
-            <button id="endCallButton" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition" style="display: none;">
-                End Call
-            </button>
-        </div>
-
-        <div id="videoGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="flex flex-col items-center"><h2 class="text-xl font-semibold mb-3 text-indigo-300">My Video</h2>
-                <div class="video-container"><video id="localVideo" autoplay muted playsinline></video></div>
-            </div>
-            <div class="flex flex-col items-center"><h2 class="text-xl font-semibold mb-3 text-indigo-300">Remote Video</h2>
-                <div class="video-container"><video id="remoteVideo" autoplay playsinline></video></div>
-            </div>
-        </div>
-
-        <div id="parent-view" class="w-full mt-8 p-6 bg-gray-900 rounded-xl">
-            <h2 class="text-xl font-semibold text-gray-400 mb-3">Storyteller (Parent)</h2>
-            <div id="parent-story-display" class="bg-gray-700 p-6 rounded-lg text-2xl font-serif text-white min-h-[150px] mb-4">
-                Click "Start / Join Story" above to begin.
-            </div>
-            <div class="flex justify-between items-center mt-4">
-                <button id="speakerButton" class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-full w-28">
-                    Speaker
-                </button>
-                <button id="nextLineButton" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition">
-                    Next Line ➡️
-                </button>
+                    <!-- Controls -->
+                    <div class="controls">
+                        <button class="control-button">speaker</button>
+                        <button id="endCallButton" class="control-button end-call" style="display:none;">
+                            end call
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div id="child-view" style="display: none;"></div>
+
+        <!-- Phone 2: Overview Screen -->
+        <div class="phone-wrapper" id="overview-screen">
+            <div class="phone-frame">
+                <div class="phone-screen">
+                    <div class="screen-content">
+                        <h2 class="overview-header">Overview</h2>
+                        <div class="recommendations">
+                            <h3 class="recommendations-title">Recommended Stories</h3>
+                            <p class="recommendations-subtitle">
+                                *based on child comprehension level
+                            </p>
+                            <div class="story-grid">
+                                <div class="story-card"></div>
+                                <div class="story-card"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button class="control-button">speaker</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <script src="/js/tst.js"></script>
+    <!-- Hidden RTC controls for tst.js -->
+    <input type="hidden" id="userRoleInput" value="Parent" class="hidden-rtc" />
+    <input type="hidden" id="roomInput" value="test-room" class="hidden-rtc" />
+    <button id="joinButton" class="hidden-rtc">Start Story Call</button>
+
+    <script src="js/tst.js"></script>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const endBtn = document.getElementById("endCallButton");
+    const inCallScreen = document.getElementById("in-call-screen");
+    const overviewScreen = document.getElementById("overview-screen");
+
+    if (!endBtn || !inCallScreen || !overviewScreen) return;
+
+    endBtn.addEventListener("click", () => {
+
+        // Only mobile (<901px)
+        if (window.innerWidth <= 900) {
+            // Switch screens
+            inCallScreen.style.display = "none";
+            overviewScreen.style.display = "flex";   // override default "display:none"
+            overviewScreen.classList.add("show");    // if your CSS has show logic
+        }
+
+    });
+
+});
+</script>
+
 </body>
 </html>
