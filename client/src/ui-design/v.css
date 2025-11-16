@@ -197,21 +197,21 @@ body {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* "Call Ended" view styles */
-.ended-call-view {
-    display: flex;
+/* Call Ended Message */
+.call-ended-message {
+    display: none; /* Hidden by default */
     justify-content: center;
     align-items: center;
-    background-color: #f0f0f0;
-    box-shadow: none;
+    text-align: center;
+    flex-grow: 1;
+    width: 100%;
 }
 
-.ended-call-view h1 {
-    font-size: 2.5rem;
+.call-ended-message h1 {
+    font-size: 4rem;
+    color: #1f2937;
     font-weight: bold;
-    color: #374151;
 }
-
 
 /* Desktop Styles */
 @media (min-width: 901px) {
