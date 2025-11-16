@@ -26,13 +26,13 @@ try {
       credential: admin.credential.cert(serviceAccount),
     });
 
-    console.log("🔥 Firebase initialized");
+    console.log("Firebase initialized");
   } else {
-    console.log("⚠️ Firebase already initialized");
+    console.log("Firebase already initialized");
   }
 
   db = admin.firestore();
-  console.log("✅ Firestore connected successfully!");
+  console.log("Firestore connected successfully!");
 } catch (error) {
   console.error("❌ Firebase connection error:", error.message);
 }

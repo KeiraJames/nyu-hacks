@@ -5,14 +5,13 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { readFile } from 'fs/promises';
+import fs from 'fs/promises';
+import 'dotenv/config';
+import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 
-/////////////////////// Custom modules ///////////////////////
 import corsOptions from './configs/corsOptions.js';
 import logger from './middleware/logger.js';
-///////////////////////////////////////////////////////////////
 
-// Resolve __dirname / __filename in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -21,117 +20,153 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: corsOptions });
 const PORT = process.env.PORT || 3000;
 
-const rooms = {}; // { [roomName]: { clients: [{id, role}], storyState: {...} } }
+const rooms = {};
 
-////////////////////////////// Middleware ///////////////////////////
+const elevenlabs = new ElevenLabsClient({
+  apiKey: process.env.ELEVEN_API_KEY
+});
+
+const CHAR1_VOICE = '1vGQNBgLaiM3EdZtxIiuY';
+const CHAR2_VOICE = 'nDJIICjR9zfJExIFeSCN';
+
 app.use(logger);
 app.use(cors(corsOptions));
-
-// Serve static frontend assets
 app.use(express.static(join(__dirname, '../client', 'public')));
 
-////////////////////////////// Routes ///////////////////////////////
-
-// Serve stories.json to the frontend
 app.get('/stories', async (req, res) => {
-    try {
-        const filePath = join(__dirname, 'data', 'stories.json'); // server/data/stories.json
-        const json = await readFile(filePath, 'utf8');
-        res.setHeader('Content-Type', 'application/json');
-        res.send(json);
-    } catch (err) {
-        console.error('Error reading stories.json:', err);
-        res.status(500).json({ error: 'Failed to load stories' });
-    }
+  try {
+    const storiesPath = join(__dirname, 'data', 'stories.json');
+    const data = await fs.readFile(storiesPath, 'utf-8');
+    const stories = JSON.parse(data);
+    res.json(stories);
+  } catch (err) {
+    console.error('Error reading stories.json:', err);
+    res.status(500).json({ error: 'Could not load stories' });
+  }
 });
 
-////////////////////////////// Socket.IO ////////////////////////////
+app.post('/tts', express.json(), async (req, res) => {
+  const { text, voice } = req.body;
+
+  if (!text || !voice) {
+    return res.status(400).json({ error: 'Missing text or voice' });
+  }
+
+  let voice_settings = null;
+
+  if (voice === CHAR1_VOICE) {
+    voice_settings = {
+      stability: 0.35,
+      similarity_boost: 0.9,
+      style: 0.8,
+      use_speaker_boost: true,
+      speed: 1.0
+    };
+  } else if (voice === CHAR2_VOICE) {
+    voice_settings = {
+      stability: 0.55,
+      similarity_boost: 0.85,
+      style: 0.6,
+      use_speaker_boost: true,
+      speed: 0.95
+    };
+  }
+
+  try {
+    const audioStream = await elevenlabs.textToSpeech.convert(voice, {
+      text,
+      model_id: 'eleven_multilingual_v2',
+      output_format: 'mp3_44100_128',
+      voice_settings
+    });
+
+    if (!audioStream) {
+      return res.status(500).send('TTS stream error');
+    }
+
+    res.setHeader('Content-Type', 'audio/mpeg');
+
+    for await (const chunk of audioStream) {
+      if (chunk) {
+        res.write(chunk);
+      }
+    }
+
+    res.end();
+  } catch (err) {
+    console.error('TTS Error:', err);
+    res.status(500).send('TTS Error');
+  }
+});
 
 io.on('connection', (socket) => {
-    console.log(`User connected: ${socket.id}`);
+  console.log(`User connected: ${socket.id}`);
 
-    // Create or join a room
-    socket.on('create or join', (room) => {
-        console.log(`Received request to join room ${room}`);
+  socket.on('create or join', (room, requestedRole) => {
+    console.log(`Received request to join room ${room}`);
 
-        const clientsInRoom = rooms[room] ? rooms[room].clients.length : 0;
-        let userRole;
+    const clientsInRoom = rooms[room] ? rooms[room].clients.length : 0;
+    let userRole;
 
-        if (clientsInRoom === 0) {
-            // First user is Parent
-            userRole = 'Parent';
-            rooms[room] = {
-                clients: [{ id: socket.id, role: userRole }],
-                storyState: { currentStory: 0, currentLine: 0, isActive: true }
-            };
-            socket.join(room);
-            socket.emit('role_assigned', room, socket.id, userRole);
-            console.log(`Room created: ${room}. User ${socket.id} is Parent.`);
-        } else if (clientsInRoom === 1) {
-            // Second user is Child
-            userRole = 'Child';
-            rooms[room].clients.push({ id: socket.id, role: userRole });
-            socket.join(room);
-            socket.emit('role_assigned', room, socket.id, userRole);
+    if (clientsInRoom === 0) {
+      userRole = 'Parent';
+      rooms[room] = {
+        clients: [{ id: socket.id, role: userRole }]
+      };
+      socket.join(room);
+      socket.emit('role_assigned', room, socket.id, userRole);
+      console.log(`Room created: ${room}. User ${socket.id} is ${userRole}.`);
+    } else if (clientsInRoom === 1) {
+      userRole = 'Child';
+      rooms[room].clients.push({ id: socket.id, role: userRole });
+      socket.join(room);
+      socket.emit('role_assigned', room, socket.id, userRole);
+      socket.to(room).emit('join', room);
+      console.log(`User ${socket.id} joined room ${room}. Role: ${userRole}.`);
+    } else {
+      socket.emit('full', room);
+      console.log(`Room ${room} is full.`);
+    }
+  });
 
-            // Notify Parent that Child joined
-            socket.to(room).emit('join', room);
-            console.log(`User ${socket.id} joined room ${room}. Role: Child.`);
-        } else {
-            // Room full
-            socket.emit('full', room);
-            console.log(`Room ${room} is full.`);
-        }
-    });
+  socket.on('message', (message) => {
+    console.log(`Server received WebRTC signal: ${message.type || 'unknown'}`);
+    socket.broadcast.emit('message', message);
+  });
 
-    // WebRTC signaling relay
-    socket.on('message', (message) => {
-        console.log(`Server received WebRTC signal: ${message.type || 'unknown'}`);
-        socket.broadcast.emit('message', message);
-    });
+  socket.on('story_line', (payload) => {
+    const { room, line } = payload || {};
+    if (room && line) {
+      socket.to(room).emit('story_line', line);
+    }
+  });
 
-    // Story lines: Parent sends, server relays to the other peer in the room
-    socket.on('story_line', ({ room, line }) => {
-        if (!room || !rooms[room]) return;
-        console.log(`Story line for room ${room}:`, line);
-        socket.to(room).emit('story_line', line);
-    });
+  socket.on('end_call', (room) => {
+    console.log(`User ${socket.id} ended call in room ${room}.`);
+    socket.to(room).emit('call_ended');
+    if (rooms[room]) {
+      delete rooms[room];
+      console.log(`Room ${room} closed and cleaned up.`);
+    }
+  });
 
-    // End call explicitly
-    socket.on('end_call', (room) => {
-        console.log(`User ${socket.id} ended call in room ${room}.`);
-
+  socket.on('disconnect', () => {
+    console.log(`User disconnected: ${socket.id}`);
+    for (const room in rooms) {
+      const index = rooms[room].clients.findIndex(c => c.id === socket.id);
+      if (index !== -1) {
         socket.to(room).emit('call_ended');
-
-        if (rooms[room]) {
-            delete rooms[room];
-            console.log(`Room ${room} closed and cleaned up.`);
+        rooms[room].clients.splice(index, 1);
+        if (rooms[room].clients.length === 0) {
+          delete rooms[room];
+          console.log(`Room ${room} closed.`);
         }
-    });
-
-    // Handle disconnects & cleanup
-    socket.on('disconnect', () => {
-        console.log(`User disconnected: ${socket.id}`);
-
-        for (const room in rooms) {
-            const index = rooms[room].clients.findIndex((client) => client.id === socket.id);
-            if (index !== -1) {
-                socket.to(room).emit('call_ended');
-
-                rooms[room].clients.splice(index, 1);
-
-                if (rooms[room].clients.length === 0) {
-                    delete rooms[room];
-                    console.log(`Room ${room} closed.`);
-                }
-                break;
-            }
-        }
-    });
+        break;
+      }
+    }
+  });
 });
 
-////////////////////////////// Start server /////////////////////////
-
 httpServer.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
