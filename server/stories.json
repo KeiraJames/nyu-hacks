@@ -1,0 +1,66 @@
+[
+  {
+    "title": "The Little Star's Light",
+    "reading_time_approx_min": 2.5,
+    "characters": {
+      "char1_name": "Starlight",
+      "char2_name": "Moon"
+    },
+    "script": [
+      {"speaker": "narrator", "line": "High above the sleepy town lived a tiny, nervous star named Starlight."},
+      {"speaker": "narrator", "line": "One night, Starlight felt very dim."},
+      {"speaker": "char1", "line": "Oh dear, I don't think my light is bright enough tonight. Maybe I should just hide."},
+      {"speaker": "narrator", "line": "The big, wise Moon was watching nearby."},
+      {"speaker": "char2", "line": "Starlight, why are you frowning? You look wonderful!"},
+      {"speaker": "char1", "line": "But look! That star is huge and sparkly! My light is just a tiny flicker."},
+      {"speaker": "char2", "line": "A tiny flicker is exactly what someone needs. Every light, no matter how small, guides a sailor home or helps a firefly find a flower."},
+      {"speaker": "narrator", "line": "Starlight thought about this. He decided to try his best."},
+      {"speaker": "char1", "line": "You’re right, Moon! I will shine as brightly as I can, just for me."},
+      {"speaker": "narrator", "line": "Starlight puffed up his chest and shone! His tiny, cheerful light joined the sky, making the night perfect."},
+      {"speaker": "narrator", "line": "The end."}
+    ]
+  },
+  {
+    "title": "Freddy the Frog and the Fast River",
+    "reading_time_approx_min": 2.0,
+    "characters": {
+      "char1_name": "Freddy",
+      "char2_name": "Turtle"
+    },
+    "script": [
+      {"speaker": "narrator", "line": "Freddy the Frog loved his little pond, but he dreamed of the big, wide river."},
+      {"speaker": "narrator", "line": "One morning, Freddy decided to jump in!"},
+      {"speaker": "char1", "line": "Whee! This current is so fast! I'm moving! I'm going to see the whole world!"},
+      {"speaker": "narrator", "line": "Suddenly, a big log zipped past and knocked Freddy off balance. He felt scared."},
+      {"speaker": "char2", "line": "Woah there, little hopper! You look a bit green around the gills."},
+      {"speaker": "narrator", "line": "It was Turtle, floating by on a mossy stone."},
+      {"speaker": "char1", "line": "I wanted to be fast, but this river is too fast! I can't keep up, and I don't know where I'm going."},
+      {"speaker": "char2", "line": "You don't always need to be fast. Sometimes you need to be strong and steady. Grab onto my shell and let's go slow. We'll find a nice quiet eddy."},
+      {"speaker": "narrator", "line": "Freddy held on tight to Turtle. They drifted slowly until they reached a calm, safe pool."},
+      {"speaker": "char1", "line": "Thank you, Turtle. Slow and steady really does win the day."},
+      {"speaker": "narrator", "line": "The end."}
+    ]
+  },
+  {
+    "title": "The Missing Red Crayon",
+    "reading_time_approx_min": 2.3,
+    "characters": {
+      "char1_name": "Leo",
+      "char2_name": "Pencil"
+    },
+    "script": [
+      {"speaker": "narrator", "line": "Leo the Lion cub was coloring a sunset, but he couldn't find his favorite red crayon."},
+      {"speaker": "char1", "line": "Where is it? I can't color the sun without red! I'll never finish my picture!"},
+      {"speaker": "narrator", "line": "Pencil, who was resting nearby, rolled closer."},
+      {"speaker": "char2", "line": "Calm down, Leo. When you're angry, you can't see anything clearly. Let's look together."},
+      {"speaker": "char1", "line": "But I've looked everywhere! It’s gone forever! Everything is ruined!"},
+      {"speaker": "char2", "line": "We need to use our detective eyes. What did you color last? Think hard."},
+      {"speaker": "narrator", "line": "Leo closed his eyes and remembered he had been drawing a giant, red apple."},
+      {"speaker": "char1", "line": "The apple! I put it away with the fruit basket drawing on the shelf!"},
+      {"speaker": "narrator", "line": "Leo rushed to the shelf and found the red crayon tucked safely inside the basket drawing."},
+      {"speaker": "char2", "line": "See? Slow thinking is always better than fast worrying."},
+      {"speaker": "char1", "line": "You're right, Pencil. Thanks for helping me pause and think."},
+      {"speaker": "narrator", "line": "The end."}
+    ]
+  }
+]
