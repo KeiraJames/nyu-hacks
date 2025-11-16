@@ -37,7 +37,7 @@
                 padding: 0 !important;
                 width: 100%;
                 height: 100%;
-                overflow: hidden;
+                /* overflow: hidden; */
             }
 
             #videoGrid {
@@ -81,6 +81,15 @@
 
                 border-radius: 8px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+
+            #parent-view {
+                position: absolute;
+                z-index: 998;
+                top: 10px;
+                width: 95%;
+                left: 50%;
+                transform: translateX(-50%);
             }
         }
     </style>
@@ -130,13 +139,11 @@
 
         </div>
 
-
-
         <div id="parent-view" class="w-full mt-8 p-6 bg-gray-900 rounded-xl">
-            <h2 class="text-xl font-semibold text-gray-400 mb-3">Storyteller (Parent)</h2>
+            <!-- <h2 class="text-xl font-semibold text-gray-400 mb-3">Transcript</h2> -->
             <div id="parent-story-display"
                 class="bg-gray-700 p-6 rounded-lg text-2xl font-serif text-white min-h-[150px] mb-4">
-                Click "Start / Join Story" above to begin.
+                Get ready to read.
             </div>
             <div class="flex justify-between items-center mt-4">
                 <button id="speakerButton"
