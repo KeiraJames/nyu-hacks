@@ -3,307 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebRTC P2P Video Chat</title>
-   
+    <title>Select Role</title>
     <script src="https://cdn.tailwindcss.com"></script>
- 
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <style>
-        
-        .video-container {
-            position: relative;
-            width: 100%;
-            padding-top: 75%; 
-            background-color: #1e293b; 
-            border-radius: 0.75rem;
-            overflow: hidden;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
-        }
-        .video-container video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover; 
-        }
-        #localVideo {
-           
-            transform: scaleX(-1);
-        }
-        #remoteVideo {
-          
-            transform: scaleX(1);
+        body {
+            background-color: #111827; /* Tailwind gray-900 */
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen p-4 flex flex-col items-center">
+<body class="min-h-screen flex flex-col items-center justify-center">
 
-    <header class="text-center mb-8">
-        <h1 class="text-4xl font-extrabold text-indigo-400">P2P Video Call</h1>
-        <p id="status" class="mt-2 text-lg text-gray-400">Enter a room name to start or join a call.</p>
-    </header>
-
-    <main class="w-full max-w-4xl">
-        
-      
-        <div id="controls" class="flex flex-col sm:flex-row gap-4 mb-8 p-4 bg-gray-800 rounded-xl shadow-lg">
-            <input type="text" id="roomInput" placeholder="Enter Room Name (e.g., 'gemini-call')" 
-                   class="flex-grow p-3 rounded-lg border border-indigo-600 bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition"
-                   value="test-room">
-            <button id="joinButton" onclick="joinRoom()"
-                    class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                Start / Join Call
-            </button>
+    <div class="w-full max-w-md p-8 bg-gray-800 rounded-xl shadow-2xl text-center">
+        <h1 class="text-4xl font-extrabold text-indigo-400 mb-8">CoCo Melon</h1>
+        <h2 class="text-3xl font-extrabold text-white mb-6">Are you?</h2>
+        <div class="flex flex-col gap-4">
+            
+            <a href="/parent-page.html"
+                class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition duration-300 transform hover:scale-105">
+                Parent
+            </a>
+            
+            <a href="/child-page.html"
+                class="px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition duration-300 transform hover:scale-105">
+                Child
+            </a>
         </div>
+    </div>
 
-       
-        <div id="videoGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <div class="flex flex-col items-center">
-                <h2 class="text-xl font-semibold mb-3 text-indigo-300">My Video</h2>
-                <div class="video-container">
-                    <video id="localVideo" autoplay muted playsinline></video>
-                </div>
-            </div>
-
-            <div class="flex flex-col items-center">
-                <h2 class="text-xl font-semibold mb-3 text-indigo-300">Remote VideoÂ </h2>
-                <div class="video-container">
-                    <video id="remoteVideo" autoplay playsinline></video>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <script>
-       
-        const serverUrl = 'http://localhost:3000'; 
-        const socket = io(serverUrl);
-        const configuration = { 
-            
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' }
-            ] 
-        };
-        
-        let pc; 
-        let localStream; 
-        let room; 
-
-     
-        const localVideo = document.getElementById('localVideo');
-        const remoteVideo = document.getElementById('remoteVideo');
-        const statusElement = document.getElementById('status');
-        const joinButton = document.getElementById('joinButton');
-        const roomInput = document.getElementById('roomInput');
-
-      
-        function updateStatus(message) {
-            statusElement.textContent = message;
-        }
-
-        socket.on('log', (array) => {
-            console.log.apply(console, array);
-        });
-
-       
-        socket.on('created', (room, id) => {
-            console.log(`Room ${room} created, signaling server ID: ${id}`);
-            updateStatus(`Room '${room}' created. Waiting for a second user.`);
-            
-            getMedia();
-        });
-
-       
-        socket.on('joined', (room, id) => {
-            console.log(`User B joined room ${room}, signaling server ID: ${id}`);
-            updateStatus(`Joined room '${room}'. Connection ready.`);
-            // User B gets media first.
-            getMedia();
-        });
-
-        
-        socket.on('join', (room) => {
-             console.log(`Another user joined the room ${room}. Starting negotiation.`);
-             updateStatus(`User B has joined. Starting WebRTC connection...`);
-             
-            
-             const checkInterval = setInterval(() => {
-                if (localStream) {
-                    clearInterval(checkInterval);
-                    initializePeerConnection(true); // User A creates the Offer
-                }
-             }, 100);
-        });
-        
-       
-        socket.on('message', async (message) => {
-            console.log('Client received message:', message.type || message);
-
-            if (message.type === 'offer') {
-                
-                const processOffer = async () => {
-                    if (!localStream) {
-                       
-                        console.log("Receiver: Local stream not ready. Retrying offer processing in 100ms...");
-                        setTimeout(processOffer, 100);
-                        return;
-                    }
-
-                    
-                    if (!pc) {
-                         initializePeerConnection(false); 
-                    }
-                    
-                   
-                    await pc.setRemoteDescription(new RTCSessionDescription(message));
-                    updateStatus('Received Offer. Creating Answer...');
-                    const answer = await pc.createAnswer();
-                    await pc.setLocalDescription(answer);
-                    
-                    
-                    sendMessage(pc.localDescription);
-                };
-                
-                
-                processOffer();
-
-            } else if (message.type === 'answer') {
-                
-                await pc.setRemoteDescription(new RTCSessionDescription(message));
-                updateStatus('Connection established! Video stream starting.');
-
-            } else if (message.type === 'candidate') {
-                if (!pc) {
-                    console.error("Received ICE candidate before RTCPeerConnection initialized.");
-                    return;
-                }
-                
-              
-                const candidate = new RTCIceCandidate({
-                    sdpMid: message.sdpMid,
-                    sdpMLineIndex: message.sdpMLineIndex,
-                    candidate: message.candidate
-                });
-
-               
-                await pc.addIceCandidate(candidate).catch(e => console.error('Error adding received ICE candidate:', e));
-                updateStatus('ICE candidate added.');
-            } else if (message.type === 'full') {
-                updateStatus(`Room ${room} is full! Please try a different room name.`);
-                room = null; 
-            }
-        });
-
-      
-        function sendMessage(message) {
-            console.log('Client sending message:', message.type || message);
-            socket.emit('message', message);
-        }
-
-       
-        async function getMedia() {
-            try {
-              
-                localStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: true, 
-                    audio: true 
-                });
-                
-                
-                localVideo.srcObject = localStream;
-                updateStatus('Local camera and mic access granted.');
-
-            } catch (error) {
-                console.error('Error accessing media devices:', error);
-                updateStatus('ERROR: Could not access camera/mic. Check permissions.');
-            }
-        }
-
-       
-        function initializePeerConnection(isOfferer) {
-           
-            if (pc || !localStream) {
-                console.warn('PC initialization aborted: already initialized or missing local stream.');
-                return;
-            }
-            
-            
-            pc = new RTCPeerConnection(configuration);
-
-           
-            localStream.getTracks().forEach(track => {
-                
-                pc.addTrack(track, localStream);
-            });
-
-           
-            pc.onicecandidate = (event) => {
-                if (event.candidate) {
-                  
-                    sendMessage({
-                        type: 'candidate',
-                        sdpMid: event.candidate.sdpMid,
-                        sdpMLineIndex: event.candidate.sdpMLineIndex,
-                        candidate: event.candidate.candidate
-                    });
-                }
-            };
-
-           
-            pc.ontrack = (event) => {
-               
-                if (remoteVideo.srcObject !== event.streams[0]) {
-                    remoteVideo.srcObject = event.streams[0];
-                    console.log('Remote stream received.');
-                    updateStatus('Video Call Active!');
-                }
-            };
-            
-            
-            if (isOfferer) {
-                createOffer();
-            }
-        }
-
-        
-        async function createOffer() {
-            try {
-                
-                const offer = await pc.createOffer();
-                
-                await pc.setLocalDescription(offer);
-                
-                sendMessage(offer);
-                updateStatus('Offer created and sent. Waiting for remote answer...');
-            } catch (error) {
-                console.error('Error creating offer:', error);
-            }
-        }
-
-       
-        function joinRoom() {
-            room = roomInput.value.trim();
-            if (room === '') {
-                updateStatus('Please enter a valid room name.');
-                return;
-            }
-            
-            updateStatus(`Attempting to join room: ${room}...`);
-            joinButton.disabled = true;
-            roomInput.disabled = true;
-
-           
-            socket.emit('create or join', room);
-        }
-
-       
-        window.onload = () => {
-             updateStatus('Server connected. Ready to start/join a call.');
-        };
-        
-    </script>
 </body>
 </html>
