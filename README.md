@@ -24,6 +24,9 @@ FaceyBuk creates a shared virtual reading room where a parent and child can conn
 *   **Client-Side Text-to-Speech:** Uses the browser's built-in Web Speech API to voice character dialogue on the child's device, adding an extra layer of immersion.
 *   **Curated Story Library:** A selection of charming, illustrated stories ready for reading.
 
+<img width="829" height="860" alt="Screenshot 2025-11-16 122907" src="https://github.com/user-attachments/assets/8ec419d6-3195-448a-a463-3b16394c5202" />
+
+
 ## 🛠️ Technology Stack & Architecture
 
 The application is built with a lightweight and powerful stack, prioritizing real-time communication and a responsive user experience.
