@@ -1,12 +1,12 @@
-import path from 'path';
+import path, { join, dirname } from 'path';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
 import fs from 'fs/promises';
 import 'dotenv/config';
+
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 
 import corsOptions from './configs/corsOptions.js';
@@ -22,12 +22,12 @@ const PORT = process.env.PORT || 3000;
 
 const rooms = {};
 
+const CHAR1_VOICE = 'vGQNBgLaiM3EdZtxIiuY';
+const CHAR2_VOICE = 'nDJIICjR9zfJExIFeSCN';
+
 const elevenlabs = new ElevenLabsClient({
   apiKey: process.env.ELEVEN_API_KEY
 });
-
-const CHAR1_VOICE = '1vGQNBgLaiM3EdZtxIiuY';
-const CHAR2_VOICE = 'nDJIICjR9zfJExIFeSCN';
 
 app.use(logger);
 app.use(cors(corsOptions));
@@ -52,49 +52,44 @@ app.post('/tts', express.json(), async (req, res) => {
     return res.status(400).json({ error: 'Missing text or voice' });
   }
 
-  let voice_settings = null;
+  let voiceSettings = {};
 
   if (voice === CHAR1_VOICE) {
-    voice_settings = {
-      stability: 0.35,
-      similarity_boost: 0.9,
-      style: 0.8,
-      use_speaker_boost: true,
-      speed: 1.0
+    voiceSettings = {
+      stability: 0.3,
+      similarityBoost: 0.9,
+      style: 0.5,
+      useSpeakerBoost: true
     };
   } else if (voice === CHAR2_VOICE) {
-    voice_settings = {
-      stability: 0.55,
-      similarity_boost: 0.85,
-      style: 0.6,
-      use_speaker_boost: true,
-      speed: 0.95
+    voiceSettings = {
+      stability: 0.45,
+      similarityBoost: 0.88,
+      style: 0.45,
+      useSpeakerBoost: true
     };
   }
 
   try {
-    const audioStream = await elevenlabs.textToSpeech.convert(voice, {
+    const audio = await elevenlabs.textToSpeech.convert(voice, {
       text,
-      model_id: 'eleven_multilingual_v2',
-      output_format: 'mp3_44100_128',
-      voice_settings
+      modelId: 'eleven_multilingual_v2',
+      outputFormat: 'mp3_44100_128',
+      voiceSettings
     });
 
-    if (!audioStream) {
-      return res.status(500).send('TTS stream error');
+    if (!audio) {
+      console.error('Empty audio from ElevenLabs');
+      return res.status(500).send('TTS Error');
     }
+
+    const buffer = Buffer.isBuffer(audio) ? audio : Buffer.from(audio);
 
     res.setHeader('Content-Type', 'audio/mpeg');
-
-    for await (const chunk of audioStream) {
-      if (chunk) {
-        res.write(chunk);
-      }
-    }
-
-    res.end();
+    res.setHeader('Content-Length', buffer.length.toString());
+    res.send(buffer);
   } catch (err) {
-    console.error('TTS Error:', err);
+    console.error('ElevenLabs TTS Error:', err);
     res.status(500).send('TTS Error');
   }
 });
