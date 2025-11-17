@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let typingInterval = null;
 
     
-    // const CHAR1_VOICE = "vGQNBgLaiM3EdZtxIiuY";
-    // const CHAR2_VOICE = "nDJIICjR9zfJExIFeSCN";
+    const CHAR1_VOICE = "vGQNBgLaiM3EdZtxIiuY";
+    const CHAR2_VOICE = "nDJIICjR9zfJExIFeSCN";
     
 
     function getSelectedStoryIndex() {
@@ -127,19 +127,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ————————————————————————————————————————
-    // ELEVANLABS TTS (FULLY DISABLED)
+    // ELEVANLABS TTS 
     // ————————————————————————————————————————
-    /*
+    
     async function fetchTTSBuffer(lineObj) {
         try {
             const res = await fetch("/tts", {...});
             return await res.arrayBuffer();
         } catch (_) { return null; }
     }
-    */
+    
     // ————————————————————————————————————————
 
-    // CHILD — CHARACTER LINES (ONLY BROWSER VOICE NOW)
+    // CHILD — CHARACTER LINES 
     async function showCharacterLineChild(lineObj) {
         if (!storyDisplayEl) return;
 
@@ -148,10 +148,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         activateSpeakingAvatar(lineObj.speaker);
 
-        // ✔ type slightly faster now (110ms)
+        //  type slightly faster now (110ms)
         typeText(storyDisplayEl, lineObj.line, 105);
 
-        // ✔ ALWAYS use browser voice now
+        
         await speakFallbackVoice(lineObj.line);
 
         stopSpeakingAvatar();
